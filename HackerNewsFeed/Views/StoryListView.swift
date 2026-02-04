@@ -23,6 +23,7 @@ struct StoryListView: View {
                                 story: story,
                                 onOpen: { viewModel.openStory(story) },
                                 onOpenComments: { viewModel.openComments(story) },
+                                onOpenAuthor: { viewModel.openAuthor(story) },
                                 onCopyLink: { viewModel.copyLink(story) }
                             )
                             Divider()

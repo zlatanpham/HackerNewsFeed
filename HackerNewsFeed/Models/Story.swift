@@ -34,6 +34,11 @@ struct Story: Codable, Identifiable, Equatable {
         URL(string: "https://news.ycombinator.com/item?id=\(id)")!
     }
 
+    var authorProfileURL: URL? {
+        guard let author = by else { return nil }
+        return URL(string: "https://news.ycombinator.com/user?id=\(author)")
+    }
+
     var domain: String? {
         guard let url = storyURL, let host = url.host else { return nil }
         return host.replacingOccurrences(of: "www.", with: "")

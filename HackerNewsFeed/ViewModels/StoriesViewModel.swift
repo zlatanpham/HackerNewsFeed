@@ -73,6 +73,11 @@ class StoriesViewModel: ObservableObject {
         NSWorkspace.shared.open(story.commentsURL)
     }
 
+    func openAuthor(_ story: Story) {
+        guard let url = story.authorProfileURL else { return }
+        NSWorkspace.shared.open(url)
+    }
+
     func copyLink(_ story: Story) {
         let url = story.storyURL ?? story.commentsURL
         NSPasteboard.general.clearContents()

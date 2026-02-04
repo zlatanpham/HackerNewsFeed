@@ -4,9 +4,13 @@ struct StoryRowView: View {
     let story: Story
     let onOpen: () -> Void
     let onOpenComments: () -> Void
+    let onOpenAuthor: () -> Void
     let onCopyLink: () -> Void
 
     @State private var isHovered = false
+    @State private var isScoreHovered = false
+    @State private var isCommentsHovered = false
+    @State private var isAuthorHovered = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -26,29 +30,47 @@ struct StoryRowView: View {
 
             // Metadata row
             HStack(spacing: 12) {
-                // Score
+                // Score - clickable, opens HN thread
                 HStack(spacing: 3) {
                     Image(systemName: "arrow.up")
                         .font(.system(size: 9))
                     Text("\(story.displayScore)")
                 }
-                .foregroundStyle(Color(red: 1.0, green: 0.4, blue: 0.0))  // HN orange #FF6600
+                .foregroundStyle(Color(red: 1.0, green: 0.4, blue: 0.0).opacity(isScoreHovered ? 0.7 : 1.0))
+                .onHover { hovering in
+                    isScoreHovered = hovering
+                }
+                .onTapGesture {
+                    onOpenComments()
+                }
 
-                // Comments
+                // Comments - clickable, opens HN thread
                 HStack(spacing: 3) {
                     Image(systemName: "bubble.right")
                         .font(.system(size: 9))
                     Text("\(story.commentCount)")
                 }
-                .foregroundStyle(.secondary)
+                .foregroundStyle(isCommentsHovered ? .primary : .secondary)
+                .onHover { hovering in
+                    isCommentsHovered = hovering
+                }
+                .onTapGesture {
+                    onOpenComments()
+                }
 
-                // Author
+                // Author - clickable, opens author profile
                 HStack(spacing: 3) {
                     Image(systemName: "person")
                         .font(.system(size: 9))
                     Text(story.displayAuthor)
                 }
-                .foregroundStyle(.secondary)
+                .foregroundStyle(isAuthorHovered ? .primary : .secondary)
+                .onHover { hovering in
+                    isAuthorHovered = hovering
+                }
+                .onTapGesture {
+                    onOpenAuthor()
+                }
 
                 Spacer()
 
@@ -98,6 +120,7 @@ struct StoryRowView: View {
         ),
         onOpen: {},
         onOpenComments: {},
+        onOpenAuthor: {},
         onCopyLink: {}
     )
     .frame(width: 350)
