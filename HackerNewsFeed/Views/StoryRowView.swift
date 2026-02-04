@@ -32,7 +32,7 @@ struct StoryRowView: View {
                         .font(.system(size: 9))
                     Text("\(story.displayScore)")
                 }
-                .foregroundStyle(.orange)
+                .foregroundStyle(Color(red: 1.0, green: 0.4, blue: 0.0))  // HN orange #FF6600
 
                 // Comments
                 HStack(spacing: 3) {
