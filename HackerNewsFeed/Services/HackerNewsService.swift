@@ -3,7 +3,7 @@ import Foundation
 actor HackerNewsService {
     static let shared = HackerNewsService()
 
-    private let baseURL = "https://hacker-news.firebaseio.com/v0/"
+    private let baseURL = "https://hn.algolia.com/api/v1/"
     private let session: URLSession
     private let decoder: JSONDecoder
 
@@ -15,9 +15,22 @@ actor HackerNewsService {
         self.decoder = JSONDecoder()
     }
 
-    func fetchStoryIDs(for storyType: StoryType) async throws -> [Int] {
-        let urlString = baseURL + storyType.endpoint
-        guard let url = URL(string: urlString) else {
+    func fetchStories(for storyType: StoryType, timeFilter: TimeFilter, limit: Int = 100) async throws -> [Story] {
+        let endpoint = storyType.useDateSorting ? "search_by_date" : "search"
+
+        var components = URLComponents(string: baseURL + endpoint)!
+        var queryItems = [
+            URLQueryItem(name: "tags", value: storyType.algoliaTag),
+            URLQueryItem(name: "hitsPerPage", value: String(limit))
+        ]
+
+        if let numericFilter = timeFilter.algoliaNumericFilter {
+            queryItems.append(URLQueryItem(name: "numericFilters", value: numericFilter))
+        }
+
+        components.queryItems = queryItems
+
+        guard let url = components.url else {
             throw HackerNewsError.invalidURL
         }
 
@@ -28,58 +41,15 @@ actor HackerNewsService {
             throw HackerNewsError.invalidResponse
         }
 
-        let ids = try decoder.decode([Int].self, from: data)
-        return ids
-    }
+        let algoliaResponse = try decoder.decode(AlgoliaSearchResponse.self, from: data)
+        var stories = algoliaResponse.hits.map { Story(from: $0) }
 
-    func fetchStory(id: Int) async throws -> Story {
-        let urlString = baseURL + "item/\(id).json"
-        guard let url = URL(string: urlString) else {
-            throw HackerNewsError.invalidURL
+        // For "best" stories, sort by points (score) descending
+        if storyType == .best {
+            stories.sort { ($0.score ?? 0) > ($1.score ?? 0) }
         }
 
-        let (data, response) = try await session.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
-            throw HackerNewsError.invalidResponse
-        }
-
-        let story = try decoder.decode(Story.self, from: data)
-        return story
-    }
-
-    func fetchStories(ids: [Int], limit: Int = 100) async throws -> [Story] {
-        let limitedIDs = Array(ids.prefix(limit))
-
-        return try await withThrowingTaskGroup(of: Story?.self, returning: [Story].self) { group in
-            for id in limitedIDs {
-                group.addTask {
-                    do {
-                        return try await self.fetchStory(id: id)
-                    } catch {
-                        return nil
-                    }
-                }
-            }
-
-            var stories: [Story] = []
-            for try await story in group {
-                if let story = story {
-                    stories.append(story)
-                }
-            }
-
-            // Sort by the original order of IDs
-            let idToIndex = Dictionary(uniqueKeysWithValues: limitedIDs.enumerated().map { ($1, $0) })
-            stories.sort { story1, story2 in
-                let index1 = idToIndex[story1.id] ?? Int.max
-                let index2 = idToIndex[story2.id] ?? Int.max
-                return index1 < index2
-            }
-
-            return stories
-        }
+        return stories
     }
 }
 

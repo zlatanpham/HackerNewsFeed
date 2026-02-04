@@ -23,11 +23,14 @@ enum StoryType: String, CaseIterable, Identifiable {
         }
     }
 
-    var endpoint: String {
+    var algoliaTag: String {
         switch self {
-        case .new: return "newstories.json"
-        case .best: return "beststories.json"
-        case .top: return "topstories.json"
+        case .top: return "front_page"
+        case .new, .best: return "story"
         }
+    }
+
+    var useDateSorting: Bool {
+        self == .new
     }
 }

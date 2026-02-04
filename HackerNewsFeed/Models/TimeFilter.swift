@@ -38,4 +38,9 @@ enum TimeFilter: String, CaseIterable, Identifiable {
         guard let cutoff = cutoffDate else { return true }
         return date >= cutoff
     }
+
+    var algoliaNumericFilter: String? {
+        guard let cutoff = cutoffDate else { return nil }
+        return "created_at_i>\(Int(cutoff.timeIntervalSince1970))"
+    }
 }

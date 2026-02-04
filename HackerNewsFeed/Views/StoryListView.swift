@@ -13,12 +13,12 @@ struct StoryListView: View {
                         await viewModel.refresh()
                     }
                 }
-            } else if viewModel.filteredStories.isEmpty {
+            } else if viewModel.stories.isEmpty {
                 EmptyStateView(timeFilter: viewModel.selectedTimeFilter)
             } else {
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        ForEach(viewModel.filteredStories) { story in
+                        ForEach(viewModel.stories) { story in
                             StoryRowView(
                                 story: story,
                                 onOpen: { viewModel.openStory(story) },

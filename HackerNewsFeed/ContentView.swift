@@ -33,7 +33,7 @@ struct ContentView: View {
             StoryListView(viewModel: viewModel)
         }
         .frame(width: 350, height: 450)
-        .task(id: viewModel.selectedStoryType) {
+        .task(id: "\(viewModel.selectedStoryType.id)-\(viewModel.selectedTimeFilter.id)") {
             await viewModel.loadStories()
         }
     }

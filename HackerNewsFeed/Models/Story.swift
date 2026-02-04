@@ -44,3 +44,15 @@ struct Story: Codable, Identifiable, Equatable {
         return Date(timeIntervalSince1970: TimeInterval(time))
     }
 }
+
+extension Story {
+    init(from hit: AlgoliaHit) {
+        self.id = Int(hit.objectID) ?? 0
+        self.title = hit.title
+        self.url = hit.url
+        self.score = hit.points
+        self.by = hit.author
+        self.time = hit.createdAtI
+        self.descendants = hit.numComments
+    }
+}

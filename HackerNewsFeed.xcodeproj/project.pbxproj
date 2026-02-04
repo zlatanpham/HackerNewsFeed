@@ -14,6 +14,7 @@
 		A1000020233D4E8F00000001 /* Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000021233D4E8F00000001 /* Story.swift */; };
 		A1000022233D4E8F00000001 /* StoryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000023233D4E8F00000001 /* StoryType.swift */; };
 		A1000024233D4E8F00000001 /* TimeFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000025233D4E8F00000001 /* TimeFilter.swift */; };
+		A1000034233D4E8F00000001 /* AlgoliaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000035233D4E8F00000001 /* AlgoliaResponse.swift */; };
 		A1000026233D4E8F00000001 /* HackerNewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000027233D4E8F00000001 /* HackerNewsService.swift */; };
 		A1000028233D4E8F00000001 /* StoriesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000029233D4E8F00000001 /* StoriesViewModel.swift */; };
 		A100002A233D4E8F00000001 /* StoryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100002B233D4E8F00000001 /* StoryListView.swift */; };
@@ -41,6 +42,7 @@
 		A100002F233D4E8F00000001 /* TimeFilterPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFilterPicker.swift; sourceTree = "<group>"; };
 		A1000031233D4E8F00000001 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		A1000033233D4E8F00000001 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		A1000035233D4E8F00000001 /* AlgoliaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgoliaResponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +93,7 @@
 		A1000040233D4E8F00000001 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A1000035233D4E8F00000001 /* AlgoliaResponse.swift */,
 				A1000021233D4E8F00000001 /* Story.swift */,
 				A1000023233D4E8F00000001 /* StoryType.swift */,
 				A1000025233D4E8F00000001 /* TimeFilter.swift */,
@@ -205,6 +208,7 @@
 				A1000001233D4E8F00000001 /* HackerNewsFeedApp.swift in Sources */,
 				A1000003233D4E8F00000001 /* AppDelegate.swift in Sources */,
 				A1000005233D4E8F00000001 /* ContentView.swift in Sources */,
+				A1000034233D4E8F00000001 /* AlgoliaResponse.swift in Sources */,
 				A1000020233D4E8F00000001 /* Story.swift in Sources */,
 				A1000022233D4E8F00000001 /* StoryType.swift in Sources */,
 				A1000024233D4E8F00000001 /* TimeFilter.swift in Sources */,

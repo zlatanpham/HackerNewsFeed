@@ -9,8 +9,13 @@ class StoriesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
 
-    private var cache: [StoryType: CachedStories] = [:]
+    private var cache: [CacheKey: CachedStories] = [:]
     private let cacheValidityDuration: TimeInterval = 300 // 5 minutes
+
+    private struct CacheKey: Hashable {
+        let storyType: StoryType
+        let timeFilter: TimeFilter
+    }
 
     private struct CachedStories {
         let stories: [Story]
@@ -21,15 +26,11 @@ class StoriesViewModel: ObservableObject {
         }
     }
 
-    var filteredStories: [Story] {
-        stories.filter { story in
-            selectedTimeFilter.includes(date: story.timeDate)
-        }
-    }
-
     func loadStories() async {
+        let cacheKey = CacheKey(storyType: selectedStoryType, timeFilter: selectedTimeFilter)
+
         // Check cache first
-        if let cached = cache[selectedStoryType], cached.isValid {
+        if let cached = cache[cacheKey], cached.isValid {
             stories = cached.stories
             return
         }
@@ -38,11 +39,14 @@ class StoriesViewModel: ObservableObject {
         error = nil
 
         do {
-            let ids = try await HackerNewsService.shared.fetchStoryIDs(for: selectedStoryType)
-            let fetchedStories = try await HackerNewsService.shared.fetchStories(ids: ids, limit: 100)
+            let fetchedStories = try await HackerNewsService.shared.fetchStories(
+                for: selectedStoryType,
+                timeFilter: selectedTimeFilter,
+                limit: 100
+            )
 
             stories = fetchedStories
-            cache[selectedStoryType] = CachedStories(stories: fetchedStories, timestamp: Date())
+            cache[cacheKey] = CachedStories(stories: fetchedStories, timestamp: Date())
         } catch {
             self.error = error.localizedDescription
         }
@@ -51,8 +55,9 @@ class StoriesViewModel: ObservableObject {
     }
 
     func refresh() async {
-        // Invalidate cache for current type
-        cache[selectedStoryType] = nil
+        // Invalidate cache for current type+filter combination
+        let cacheKey = CacheKey(storyType: selectedStoryType, timeFilter: selectedTimeFilter)
+        cache[cacheKey] = nil
         await loadStories()
     }
 
