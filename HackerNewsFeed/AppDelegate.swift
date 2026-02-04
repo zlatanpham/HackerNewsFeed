@@ -14,7 +14,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "newspaper.fill", accessibilityDescription: "Hacker News Feed")
+            let config = NSImage.SymbolConfiguration(pointSize: 16, weight: .medium)
+            let image = NSImage(systemSymbolName: "y.circle.fill", accessibilityDescription: "Hacker News Feed")?
+                .withSymbolConfiguration(config)
+            button.image = image
             button.action = #selector(togglePopover)
             button.target = self
         }
