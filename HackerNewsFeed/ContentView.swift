@@ -31,8 +31,29 @@ struct ContentView: View {
 
             // Story list
             StoryListView(viewModel: viewModel)
+
+            // Footer
+            Divider()
+            HStack(spacing: 12) {
+                Button("Settings...") {
+                    AppDelegate.shared?.openSettings()
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+
+                Spacer()
+
+                Button("Quit") {
+                    NSApp.terminate(nil)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+            }
+            .font(.system(size: 12))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
         }
-        .frame(width: 350, height: 450)
+        .frame(width: 350, height: 500)
         .task(id: "\(viewModel.selectedStoryType.id)-\(viewModel.selectedTimeFilter.id)") {
             await viewModel.loadStories()
         }

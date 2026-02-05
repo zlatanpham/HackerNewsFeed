@@ -1,11 +1,15 @@
 import Cocoa
 import SwiftUI
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
+    static private(set) var shared: AppDelegate!
+
     private var statusItem: NSStatusItem!
     private var popover: NSPopover!
+    private var settingsWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        AppDelegate.shared = self
         setupStatusItem()
         setupPopover()
     }
@@ -25,7 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setupPopover() {
         popover = NSPopover()
-        popover.contentSize = NSSize(width: 350, height: 450)
+        popover.contentSize = NSSize(width: 350, height: 500)
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(rootView: ContentView())
     }
@@ -38,5 +42,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         }
+    }
+
+    func openSettings() {
+        // Close the popover first
+        popover.performClose(nil)
+
+        if settingsWindow == nil {
+            let settingsView = SettingsView()
+            let hostingController = NSHostingController(rootView: settingsView)
+
+            let window = NSWindow(contentViewController: hostingController)
+            window.title = "Settings"
+            window.styleMask = [.titled, .closable]
+            window.isReleasedWhenClosed = false
+            window.delegate = self
+
+            settingsWindow = window
+        }
+
+        // Position window: centered horizontally, upper portion of screen
+        if let window = settingsWindow, let screen = NSScreen.main {
+            let screenFrame = screen.visibleFrame
+            let windowSize = window.frame.size
+            let x = screenFrame.midX - windowSize.width / 2
+            // Position window's top edge at 15% down from the top of the visible screen
+            let topPadding = screenFrame.height * 0.15
+            let y = screenFrame.maxY - windowSize.height - topPadding
+            window.setFrameOrigin(NSPoint(x: x, y: y))
+        }
+
+        // For menu bar apps, we need to temporarily become a regular app to show windows
+        NSApp.setActivationPolicy(.regular)
+        settingsWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        // Return to accessory mode (no Dock icon) when settings window closes
+        NSApp.setActivationPolicy(.accessory)
     }
 }
