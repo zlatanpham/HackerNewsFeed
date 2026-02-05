@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
-    "build:dmg": "node scripts/build-dmg.js"
+    "build:dmg": "node scripts/build-dmg.js",
+    "generate:icons": "node scripts/generate-icons.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
     "@commitlint/cli": "^20.4.1",
     "@commitlint/config-conventional": "^20.4.1",
     "appdmg": "^0.6.6",
+    "canvas": "^2.11.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7"
   },
