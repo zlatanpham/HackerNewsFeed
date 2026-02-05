@@ -16,19 +16,31 @@ struct StoryListView: View {
             } else if viewModel.stories.isEmpty {
                 EmptyStateView(timeFilter: viewModel.selectedTimeFilter)
             } else {
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(viewModel.stories) { story in
-                            StoryRowView(
-                                story: story,
-                                onOpen: { viewModel.openStory(story) },
-                                onOpenComments: { viewModel.openComments(story) },
-                                onOpenAuthor: { viewModel.openAuthor(story) },
-                                onCopyLink: { viewModel.copyLink(story) }
-                            )
-                            Divider()
-                                .padding(.leading, 12)
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            Color.clear
+                                .frame(height: 0)
+                                .id("top")
+
+                            ForEach(viewModel.stories) { story in
+                                StoryRowView(
+                                    story: story,
+                                    onOpen: { viewModel.openStory(story) },
+                                    onOpenComments: { viewModel.openComments(story) },
+                                    onOpenAuthor: { viewModel.openAuthor(story) },
+                                    onCopyLink: { viewModel.copyLink(story) }
+                                )
+                                Divider()
+                                    .padding(.leading, 12)
+                            }
                         }
+                    }
+                    .onChange(of: viewModel.selectedStoryType) { _, _ in
+                        proxy.scrollTo("top", anchor: .top)
+                    }
+                    .onChange(of: viewModel.selectedTimeFilter) { _, _ in
+                        proxy.scrollTo("top", anchor: .top)
                     }
                 }
             }
