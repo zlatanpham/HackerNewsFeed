@@ -37,34 +37,28 @@ function drawIcon(size) {
   const canvas = createCanvas(size, size);
   const ctx = canvas.getContext('2d');
 
-  // Add padding (Apple HIG recommends ~10% on each side for macOS Big Sur+ icons)
-  const padding = size * 0.1;
-  const contentSize = size - padding * 2;
-
-  // Calculate corner radius based on content size (macOS Big Sur+ style)
+  // Calculate corner radius (macOS Big Sur+ style)
   // Apple uses approximately 22.37% of the icon size for corner radius
-  const cornerRadius = contentSize * 0.2237;
+  const cornerRadius = size * 0.2237;
 
-  // Draw rounded rectangle background with padding
+  // Draw rounded rectangle background
   ctx.fillStyle = YC_ORANGE;
   ctx.beginPath();
-  ctx.roundRect(padding, padding, contentSize, contentSize, cornerRadius);
+  ctx.roundRect(0, 0, size, size, cornerRadius);
   ctx.fill();
 
   // Draw "Y" letter
   ctx.fillStyle = WHITE;
 
-  // Font size proportional to content size (approximately 65% of content size)
-  const fontSize = Math.round(contentSize * 0.65);
+  // Font size proportional to icon size (approximately 65% of icon size)
+  const fontSize = Math.round(size * 0.65);
   ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  // Position the Y centered within the content area, slightly below center for visual balance
-  const centerX = padding + contentSize / 2;
-  const centerY = padding + contentSize / 2;
-  const yOffset = contentSize * 0.02;
-  ctx.fillText('Y', centerX, centerY + yOffset);
+  // Position the Y slightly above center for visual balance
+  const yOffset = size * 0.02;
+  ctx.fillText('Y', size / 2, size / 2 + yOffset);
 
   return canvas;
 }
