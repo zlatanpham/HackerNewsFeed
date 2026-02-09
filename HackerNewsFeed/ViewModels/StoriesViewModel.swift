@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import SwiftUI
 
@@ -9,6 +10,8 @@ class StoriesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
 
+    private let readStateManager = ReadStateManager.shared
+    private var readStateCancellable: AnyCancellable?
     private var cache: [CacheKey: CachedStories] = [:]
     private let cacheValidityDuration: TimeInterval = 300 // 5 minutes
 
@@ -24,6 +27,16 @@ class StoriesViewModel: ObservableObject {
         var isValid: Bool {
             Date().timeIntervalSince(timestamp) < 300
         }
+    }
+
+    init() {
+        readStateCancellable = readStateManager.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
+    }
+
+    func isRead(_ story: Story) -> Bool {
+        readStateManager.isRead(story.id)
     }
 
     func loadStories() async {
@@ -62,6 +75,7 @@ class StoriesViewModel: ObservableObject {
     }
 
     func openStory(_ story: Story) {
+        readStateManager.markAsRead(story.id)
         guard let url = story.storyURL else {
             openComments(story)
             return
@@ -70,6 +84,7 @@ class StoriesViewModel: ObservableObject {
     }
 
     func openComments(_ story: Story) {
+        readStateManager.markAsRead(story.id)
         NSWorkspace.shared.open(story.commentsURL)
     }
 

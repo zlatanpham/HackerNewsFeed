@@ -26,6 +26,7 @@ struct StoryListView: View {
                             ForEach(viewModel.stories) { story in
                                 StoryRowView(
                                     story: story,
+                                    isRead: viewModel.isRead(story),
                                     onOpen: { viewModel.openStory(story) },
                                     onOpenComments: { viewModel.openComments(story) },
                                     onOpenAuthor: { viewModel.openAuthor(story) },

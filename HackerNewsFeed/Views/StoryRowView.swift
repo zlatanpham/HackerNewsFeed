@@ -2,6 +2,7 @@ import SwiftUI
 
 struct StoryRowView: View {
     let story: Story
+    let isRead: Bool
     let onOpen: () -> Void
     let onOpenComments: () -> Void
     let onOpenAuthor: () -> Void
@@ -82,6 +83,7 @@ struct StoryRowView: View {
             }
             .font(.system(size: 11))
         }
+        .opacity(isRead ? 0.55 : 1.0)
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(isHovered ? Color.primary.opacity(0.05) : Color.clear)
@@ -108,20 +110,40 @@ struct StoryRowView: View {
 }
 
 #Preview {
-    StoryRowView(
-        story: Story(
-            id: 1,
-            title: "Show HN: A very long title that might wrap to two lines in the compact view",
-            url: "https://example.com/article",
-            score: 256,
-            by: "johndoe",
-            time: Int(Date().timeIntervalSince1970) - 3600,
-            descendants: 42
-        ),
-        onOpen: {},
-        onOpenComments: {},
-        onOpenAuthor: {},
-        onCopyLink: {}
-    )
+    VStack(spacing: 0) {
+        StoryRowView(
+            story: Story(
+                id: 1,
+                title: "Show HN: An unread story with a long title that might wrap",
+                url: "https://example.com/article",
+                score: 256,
+                by: "johndoe",
+                time: Int(Date().timeIntervalSince1970) - 3600,
+                descendants: 42
+            ),
+            isRead: false,
+            onOpen: {},
+            onOpenComments: {},
+            onOpenAuthor: {},
+            onCopyLink: {}
+        )
+        Divider()
+        StoryRowView(
+            story: Story(
+                id: 2,
+                title: "Show HN: A read story that has been opened before",
+                url: "https://example.com/other",
+                score: 128,
+                by: "janedoe",
+                time: Int(Date().timeIntervalSince1970) - 7200,
+                descendants: 15
+            ),
+            isRead: true,
+            onOpen: {},
+            onOpenComments: {},
+            onOpenAuthor: {},
+            onCopyLink: {}
+        )
+    }
     .frame(width: 350)
 }
