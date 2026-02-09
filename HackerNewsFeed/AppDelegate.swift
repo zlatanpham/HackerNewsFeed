@@ -70,6 +70,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         // Close the popover first
         closePopover()
 
+        // Reset window so it recreates with the correct size
+        settingsWindow = nil
+
         if settingsWindow == nil {
             let settingsView = SettingsView()
             let hostingController = NSHostingController(rootView: settingsView)

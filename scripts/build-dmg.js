@@ -1,142 +1,81 @@
 #!/usr/bin/env node
-const { execSync } = require('child_process');
-const path = require('path');
-const fs = require('fs');
-const appdmg = require('appdmg');
 
-const ROOT_DIR = path.join(__dirname, '..');
-const BUILD_DIR = path.join(ROOT_DIR, 'build');
-const DIST_DIR = path.join(ROOT_DIR, 'dist');
-const APP_NAME = 'HackerNewsFeed';
-const SCHEME = 'HackerNewsFeed';
-const PROJECT = 'HackerNewsFeed.xcodeproj';
+const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
-// Read version from package.json
-const packageJson = JSON.parse(
-  fs.readFileSync(path.join(ROOT_DIR, 'package.json'), 'utf8')
-);
-const VERSION = packageJson.version;
-
+const PROJECT_NAME = "HackerNewsFeed";
+const BUILD_DIR = "build";
+const VERSION = process.env.VERSION;
+const ARCHIVE_PATH = path.join(BUILD_DIR, `${PROJECT_NAME}.xcarchive`);
 const APP_PATH = path.join(
-  BUILD_DIR,
-  'Release',
-  `${APP_NAME}.app`
+  ARCHIVE_PATH,
+  "Products",
+  "Applications",
+  `${PROJECT_NAME}.app`,
 );
-const DMG_PATH = path.join(DIST_DIR, `${APP_NAME}-${VERSION}.dmg`);
+const DMG_FILENAME = VERSION
+  ? `${PROJECT_NAME}-${VERSION}.dmg`
+  : `${PROJECT_NAME}.dmg`;
+const DMG_PATH = path.join(BUILD_DIR, DMG_FILENAME);
+const TEMP_DMG_DIR = path.join(BUILD_DIR, "dmg-temp");
 
-function log(message) {
-  console.log(`\n🔨 ${message}`);
-}
-
-function cleanPreviousBuilds() {
-  log('Cleaning previous builds...');
-
-  // Clean build directory
-  if (fs.existsSync(BUILD_DIR)) {
-    fs.rmSync(BUILD_DIR, { recursive: true });
-  }
-
-  // Clean dist directory
-  if (fs.existsSync(DIST_DIR)) {
-    fs.rmSync(DIST_DIR, { recursive: true });
-  }
-
-  // Clean Xcode build
-  execSync(`xcodebuild -project ${PROJECT} -scheme ${SCHEME} clean`, {
-    cwd: ROOT_DIR,
-    stdio: 'inherit',
-  });
-}
-
-function buildRelease() {
-  log('Building Release configuration...');
-
-  execSync(
-    `xcodebuild -project ${PROJECT} -scheme ${SCHEME} -configuration Release ` +
-      `-derivedDataPath ${BUILD_DIR} ` +
-      `CONFIGURATION_BUILD_DIR=${path.join(BUILD_DIR, 'Release')} ` +
-      'build',
-    {
-      cwd: ROOT_DIR,
-      stdio: 'inherit',
-    }
-  );
-
-  // Verify .app was created
-  if (!fs.existsSync(APP_PATH)) {
-    throw new Error(`Build failed: ${APP_PATH} not found`);
-  }
-
-  log(`Build successful: ${APP_PATH}`);
-}
-
-function createDmg() {
-  return new Promise((resolve, reject) => {
-    log('Creating DMG...');
-
-    // Ensure dist directory exists
-    fs.mkdirSync(DIST_DIR, { recursive: true });
-
-    // Remove existing DMG if present
-    if (fs.existsSync(DMG_PATH)) {
-      fs.unlinkSync(DMG_PATH);
-    }
-
-    const dmgConfig = {
-      target: DMG_PATH,
-      basepath: ROOT_DIR,
-      specification: {
-        title: APP_NAME,
-        contents: [
-          { x: 192, y: 240, type: 'file', path: APP_PATH },
-          { x: 448, y: 240, type: 'link', path: '/Applications' },
-        ],
-        window: {
-          size: {
-            width: 640,
-            height: 480,
-          },
-        },
-        format: 'UDZO',
-      },
-    };
-
-    const dmg = appdmg(dmgConfig);
-
-    dmg.on('progress', (info) => {
-      if (info.type === 'step-begin') {
-        process.stdout.write(`   ${info.title}...`);
-      } else if (info.type === 'step-end') {
-        process.stdout.write(' done\n');
-      }
-    });
-
-    dmg.on('finish', () => {
-      log(`DMG created successfully: ${DMG_PATH}`);
-      resolve();
-    });
-
-    dmg.on('error', (err) => {
-      reject(new Error(`DMG creation failed: ${err.message}`));
-    });
-  });
-}
-
-async function main() {
-  console.log(`\n📦 Building ${APP_NAME} v${VERSION} DMG\n`);
-  console.log('='.repeat(50));
-
+function run(command, options = {}) {
+  console.log(`Running: ${command}`);
   try {
-    cleanPreviousBuilds();
-    buildRelease();
-    await createDmg();
-
-    console.log('\n' + '='.repeat(50));
-    console.log(`\n✅ Success! DMG created at:\n   ${DMG_PATH}\n`);
+    execSync(command, { stdio: "inherit", ...options });
   } catch (error) {
-    console.error(`\n❌ Error: ${error.message}\n`);
+    console.error(`Failed to execute: ${command}`);
     process.exit(1);
   }
+}
+
+function main() {
+  console.log(`\n📦 Building DMG for ${PROJECT_NAME}...\n`);
+
+  // Check if archive exists
+  if (!fs.existsSync(APP_PATH)) {
+    console.error(`❌ App not found at ${APP_PATH}`);
+    console.error('Run "make archive" first to create the archive.');
+    process.exit(1);
+  }
+
+  // Clean up previous DMG
+  if (fs.existsSync(DMG_PATH)) {
+    fs.unlinkSync(DMG_PATH);
+  }
+
+  // Create temp directory for DMG contents
+  if (fs.existsSync(TEMP_DMG_DIR)) {
+    fs.rmSync(TEMP_DMG_DIR, { recursive: true });
+  }
+  fs.mkdirSync(TEMP_DMG_DIR, { recursive: true });
+
+  // Copy app to temp directory
+  console.log("📋 Copying app bundle...");
+  run(`cp -R "${APP_PATH}" "${TEMP_DMG_DIR}/"`);
+
+  // Re-sign app with ad-hoc identity and hardened runtime
+  console.log("🔏 Signing app bundle...");
+  run(
+    `codesign --force --deep -s - --options runtime "${TEMP_DMG_DIR}/${PROJECT_NAME}.app"`,
+  );
+
+  // Create symbolic link to Applications folder
+  console.log("🔗 Creating Applications symlink...");
+  run(`ln -s /Applications "${TEMP_DMG_DIR}/Applications"`);
+
+  // Create DMG
+  console.log("💿 Creating DMG...");
+  run(
+    `hdiutil create -volname "${PROJECT_NAME}" -srcfolder "${TEMP_DMG_DIR}" -ov -format UDZO "${DMG_PATH}"`,
+  );
+
+  // Clean up
+  console.log("🧹 Cleaning up...");
+  fs.rmSync(TEMP_DMG_DIR, { recursive: true });
+
+  console.log(`\n✅ DMG created successfully: ${DMG_PATH}\n`);
 }
 
 main();

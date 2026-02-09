@@ -38,6 +38,7 @@ struct ContentView: View {
                 Button("Settings...") {
                     AppDelegate.shared?.openSettings()
                 }
+                .keyboardShortcut(",", modifiers: .command)
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
 
