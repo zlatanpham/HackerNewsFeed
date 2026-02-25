@@ -8,7 +8,8 @@ BUILD_DIR = build
 ARCHIVE_PATH = $(BUILD_DIR)/$(PROJECT_NAME).xcarchive
 
 # Code signing identity (override with SIGN_IDENTITY env var)
-SIGN_IDENTITY ?= HackerNewsFeed Distribution
+# Use "-" for ad-hoc signing (default), or set to a specific identity
+SIGN_IDENTITY ?= -
 
 # Optional: pass VERSION=x.y.z to inject version into the build
 ifdef VERSION
