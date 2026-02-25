@@ -44,6 +44,7 @@ archive:
 		-configuration Release \
 		-archivePath $(ARCHIVE_PATH) \
 		CODE_SIGN_IDENTITY="$(SIGN_IDENTITY)" \
+		CODE_SIGN_STYLE=Manual \
 		$(VERSION_FLAGS) \
 		archive
 
