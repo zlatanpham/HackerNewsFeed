@@ -7,7 +7,7 @@ const path = require("path");
 const PROJECT_NAME = "HackerNewsFeed";
 const BUILD_DIR = "build";
 const VERSION = process.env.VERSION;
-const SIGN_IDENTITY = process.env.SIGN_IDENTITY || "HackerNewsFeed Distribution";
+const SIGN_IDENTITY = process.env.SIGN_IDENTITY || "-";
 const ARCHIVE_PATH = path.join(BUILD_DIR, `${PROJECT_NAME}.xcarchive`);
 const APP_PATH = path.join(
   ARCHIVE_PATH,
