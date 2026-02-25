@@ -50,6 +50,10 @@ jobs:
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain-db
 
+          # Extract and trust the certificate for code signing
+          openssl pkcs12 -in "$CERT_PATH" -clcerts -nokeys -out "$RUNNER_TEMP/cert.pem" -passin "pass:$CERTIFICATE_PASSWORD" -legacy
+          security add-trusted-cert -d -r trustRoot -k "$KEYCHAIN_PATH" "$RUNNER_TEMP/cert.pem"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
