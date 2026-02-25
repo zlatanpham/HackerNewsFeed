@@ -24,5 +24,13 @@
         <true/>
         <key>NSHumanReadableCopyright</key>
         <string>Copyright © 2024. All rights reserved.</string>
+        <key>SUFeedURL</key>
+        <string>https://zlatanpham.github.io/HackerNewsFeed/appcast.xml</string>
+        <key>SUPublicEDKey</key>
+        <string>SPARKLE_PUBLIC_KEY_PLACEHOLDER</string>
+        <key>SUEnableInstallerLauncherService</key>
+        <true/>
+        <key>SUEnableAutomaticChecks</key>
+        <true/>
     </dict>
 </plist>

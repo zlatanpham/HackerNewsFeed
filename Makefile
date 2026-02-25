@@ -7,6 +7,9 @@ PROJECT = $(PROJECT_NAME).xcodeproj
 BUILD_DIR = build
 ARCHIVE_PATH = $(BUILD_DIR)/$(PROJECT_NAME).xcarchive
 
+# Code signing identity (override with SIGN_IDENTITY env var)
+SIGN_IDENTITY ?= HackerNewsFeed Distribution
+
 # Optional: pass VERSION=x.y.z to inject version into the build
 ifdef VERSION
 VERSION_FLAGS = MARKETING_VERSION=$(VERSION) CURRENT_PROJECT_VERSION=$(VERSION)
@@ -40,7 +43,7 @@ archive:
 		-scheme $(SCHEME) \
 		-configuration Release \
 		-archivePath $(ARCHIVE_PATH) \
-		CODE_SIGN_IDENTITY="-" \
+		CODE_SIGN_IDENTITY="$(SIGN_IDENTITY)" \
 		$(VERSION_FLAGS) \
 		archive
 

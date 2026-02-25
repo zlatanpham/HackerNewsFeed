@@ -7,6 +7,7 @@ const path = require("path");
 const PROJECT_NAME = "HackerNewsFeed";
 const BUILD_DIR = "build";
 const VERSION = process.env.VERSION;
+const SIGN_IDENTITY = process.env.SIGN_IDENTITY || "HackerNewsFeed Distribution";
 const ARCHIVE_PATH = path.join(BUILD_DIR, `${PROJECT_NAME}.xcarchive`);
 const APP_PATH = path.join(
   ARCHIVE_PATH,
@@ -55,10 +56,10 @@ function main() {
   console.log("📋 Copying app bundle...");
   run(`cp -R "${APP_PATH}" "${TEMP_DMG_DIR}/"`);
 
-  // Re-sign app with ad-hoc identity and hardened runtime
+  // Re-sign app with configured identity and hardened runtime
   console.log("🔏 Signing app bundle...");
   run(
-    `codesign --force --deep -s - --options runtime "${TEMP_DMG_DIR}/${PROJECT_NAME}.app"`,
+    `codesign --force --deep -s "${SIGN_IDENTITY}" --options runtime "${TEMP_DMG_DIR}/${PROJECT_NAME}.app"`,
   );
 
   // Create symbolic link to Applications folder
