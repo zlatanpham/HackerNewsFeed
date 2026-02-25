@@ -61,3 +61,11 @@ Or use Xcode directly: `open HackerNewsFeed.xcodeproj`
 **Adding new filters:**
 - Add case to `TimeFilter` enum in `Models/TimeFilter.swift`
 - Implement `cutoffDate` logic
+
+## Releasing a New Version
+
+1. Bump `CFBundleShortVersionString` in `HackerNewsFeed/Info.plist`
+2. Commit the change (and any features included in the release)
+3. Push to `main`: `git push origin main`
+4. Create and push a version tag: `git tag vX.Y.Z && git push origin vX.Y.Z`
+5. The CI release workflow is triggered by the new tag and builds the release automatically
