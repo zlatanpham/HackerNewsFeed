@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
-    <channel>
-        <title>HackerNewsFeed</title>
-        <link>https://zlatanpham.github.io/HackerNewsFeed/appcast.xml</link>
-        <description>Updates for HackerNewsFeed</description>
-        <language>en</language>
-    </channel>
-</rss>

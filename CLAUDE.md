@@ -62,19 +62,6 @@ Or use Xcode directly: `open HackerNewsFeed.xcodeproj`
 - Add case to `TimeFilter` enum in `Models/TimeFilter.swift`
 - Implement `cutoffDate` logic
 
-## Auto-Updates (Sparkle)
-
-The app uses [Sparkle 2.x](https://sparkle-project.org/) for in-app auto-updates. Key components:
-- **`UpdaterService`** (`Services/UpdateService.swift`) — Sparkle wrapper singleton
-- **`docs/appcast.xml`** — Sparkle appcast served via GitHub Pages
-- **`SUPublicEDKey`** in `Info.plist` — EdDSA public key for update verification
-- CI signs DMGs with a self-signed certificate (consistent code identity) and Sparkle EdDSA key
-
-**Required GitHub Secrets:**
-- `CERTIFICATE_P12_BASE64` — Base64-encoded self-signed `.p12` certificate
-- `CERTIFICATE_PASSWORD` — Passphrase for the `.p12`
-- `SPARKLE_PRIVATE_KEY` — Sparkle EdDSA private key (from `generate_keys -x`)
-
 ## Releasing a New Version
 
 1. Bump `CFBundleShortVersionString` in `HackerNewsFeed/Info.plist`
@@ -84,7 +71,8 @@ The app uses [Sparkle 2.x](https://sparkle-project.org/) for in-app auto-updates
 5. The CI release workflow:
    - Imports the self-signed certificate for consistent code signing
    - Builds and signs the DMG
-   - Signs the DMG with Sparkle EdDSA key
-   - Updates `docs/appcast.xml` with the new release entry
    - Creates the GitHub Release with DMG and zip attachments
-6. Existing users receive the update automatically via Sparkle
+
+**Required GitHub Secrets:**
+- `CERTIFICATE_P12_BASE64` — Base64-encoded self-signed `.p12` certificate
+- `CERTIFICATE_PASSWORD` — Passphrase for the `.p12`
